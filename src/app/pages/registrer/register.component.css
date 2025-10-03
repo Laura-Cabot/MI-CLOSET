@@ -1,0 +1,29 @@
+/* Bordes de la tarjeta */
+.auth-card {
+  border: 1px solid #fda4af; /* rose-300 */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Título */
+.auth-card h2 {
+  border-bottom: 2px solid #fb7185; /* rose-400 */
+}
+
+/* Inputs focus */
+.auth-card input:focus {
+  border-color: #fb7185; /* rose-400 */
+  box-shadow: 0 0 0 2px rgba(251, 113, 133, 0.25);
+}
+
+/* Botón */
+.auth-card button {
+  background-color: #fb7185; /* rose-400 */
+}
+
+.auth-card button:hover {
+  background-color: #f43f5e; /* rose-500 */
+}
+
+.auth-card button:disabled {
+  background-color: #fecdd3; /* rose-200 */
+}

@@ -1,0 +1,23 @@
+<h2 class="text-2xl font-bold mb-4">Editor de Productos</h2>
+
+<form (ngSubmit)="addProduct()" class="space-y-2 mb-4">
+  <input [(ngModel)]="newProduct.name" name="name" placeholder="Nombre"
+    class="border p-2 w-full rounded" />
+  <input [(ngModel)]="newProduct.price" name="price" placeholder="Precio" type="number"
+    class="border p-2 w-full rounded" />
+  <input [(ngModel)]="newProduct.image" name="image" placeholder="URL de la imagen"
+    class="border p-2 w-full rounded" />
+  <button type="submit" class="bg-rose-400 text-white px-4 py-2 rounded">Agregar</button>
+</form>
+
+<ul>
+  <li *ngFor="let product of products; let i = index"
+      class="flex justify-between items-center border-b py-2">
+    <span>{{ product.name }} - {{ product.price | currency:'USD' }}</span>
+    <div>
+      <button (click)="editProduct(i)" class="mr-2 text-blue-500">Editar</button>
+      <button (click)="deleteProduct(i)" class="mr-2 text-red-500">Eliminar</button>
+      <button (click)="editPhotoWithAI(i)" class="text-purple-500">Editar foto con IA</button>
+    </div>
+  </li>
+</ul>

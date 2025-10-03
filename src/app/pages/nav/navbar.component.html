@@ -1,0 +1,65 @@
+<nav class="bg-white shadow-md">
+  <div class="max-w-7xl mx-auto px-8">
+    <div class="flex items-center justify-between h-28">
+      
+      <!-- Logo -->
+      <div class="flex-shrink-0 flex items-center">
+        <a routerLink="/">
+          <img 
+            src="assets/logo/logo.jpg" 
+            alt="Mi Closet" 
+            class="h-24 w-auto hover:opacity-90 transition" 
+          />
+        </a>
+      </div>
+      <!-- Botón hamburguesa (solo mobile) -->
+      <button (click)="isOpen = !isOpen"
+        class="md:hidden text-gray-600 hover:text-rose-500 focus:outline-none text-2xl">
+        ☰
+      </button>
+
+      <!-- Links en Desktop -->
+      <div class="hidden md:flex gap-10">
+        <div class="ml-10 flex items-center space-x-6">
+          <a routerLink="/historia" class="text- font-semibold text-gray-700 hover:text-rose-400 px-3 py-2 rounded-md">Nuestra Historia</a>
+          <a routerLink="/catalogo" class="text-md font-semibold text-gray-700 hover:text-rose-400 px-3 py-2 rounded-md">Catálogo</a>
+          <a routerLink="/contacto" class="text-md font-semibold text-gray-700 hover:text-rose-400 px-3 py-2 rounded-md">Contacto</a>
+
+          <!-- Carrito -->
+          <a routerLink="/carrito" class="text-md font-semibold text-gray-700 hover:text-rose-400 relative">
+            Carrito
+            <span *ngIf="itemCount() > 0"
+              class="absolute -top-1 -right-2 w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full flex items-center justify-center">
+              {{ itemCount() }}
+            </span>
+          </a>
+
+          <!-- Login/Registro -->
+          <div class="flex space-x-3 ml-4">
+            <a routerLink="/login" class="bg-rose-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-rose-700">Login</a>
+            <a routerLink="/registro" class="bg-gray-100 text-rose-500 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">Registro</a>
+          </div>
+
+          <!-- Buscador -->
+          <div class="relative ml-6 hidden md:block">
+            <input type="text" placeholder="Buscar..."
+              [(ngModel)]="searchQuery" (keyup.enter)="onSearch()"
+              class="px-3 py-1 border rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-rose-400" />
+            <button (click)="onSearch()"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-rose-500">🔍</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menú Mobile -->
+  <div *ngIf="isOpen" class="md:hidden bg-white shadow-lg border-t border-gray-200">
+    <a routerLink="/historia" class="block px-4 py-2 text-gray-700 hover:bg-rose-50">Nuestra Historia</a>
+    <a routerLink="/catalogo" class="block px-4 py-2 text-gray-700 hover:bg-rose-50">Catálogo</a>
+    <a routerLink="/contacto" class="block px-4 py-2 text-gray-700 hover:bg-rose-50">Contacto</a>
+    <a routerLink="/carrito" class="block px-4 py-2 text-gray-700 hover:bg-rose-50">Carrito</a>
+    <a routerLink="/login" class="block px-4 py-2 bg-rose-600 text-white">Login</a>
+    <a routerLink="/registro" class="block px-4 py-2 bg-gray-100 text-rose-500">Registro</a>
+  </div>
+</nav>

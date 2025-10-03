@@ -1,1 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --brand-pink: #E85C4A;
+  --brand-pink-light: #F27B64;
+}
+body {
+  background-color: white;
+  color: #1f2937; /* gris oscuro para texto */
+  font-family: Georgia, 'Times New Roman', serif;
+}

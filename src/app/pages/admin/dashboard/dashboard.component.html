@@ -1,0 +1,104 @@
+<!-- Pantalla de acceso -->
+<div *ngIf="!isAuthenticated" class="max-w-sm mx-auto bg-white shadow-md p-6 rounded-lg mt-20">
+  <h2 class="text-xl font-bold text-center text-rose-500 mb-4">Acceso al Panel</h2>
+  <input
+    [(ngModel)]="accessKey"
+    placeholder="Ingrese la clave"
+    class="w-full border rounded px-3 py-2 mb-4"
+    type="password"
+    name="key"
+  />
+  <button
+    (click)="checkKey()"
+    class="w-full bg-rose-500 text-white px-4 py-2 rounded hover:bg-rose-600"
+  >
+    Ingresar
+  </button>
+</div>
+
+<!-- Panel visible solo si pasa la clave -->
+<div *ngIf="isAuthenticated">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-rose-500">Panel de Control</h1>
+    <button
+      (click)="logout()"
+      class="bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400"
+    >
+      Cerrar sesión
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Productos Destacados -->
+    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+      <h2 class="text-xl font-semibold mb-2">Productos Destacados</h2>
+      <p class="text-gray-600">Gestiona qué productos se muestran en portada.</p>
+      <a
+        routerLink="/admin/editor"
+        class="mt-4 inline-block bg-rose-400 text-white px-4 py-2 rounded hover:bg-rose-500"
+      >
+        Editar Destacados
+      </a>
+    </div>
+
+    <!-- Agregar Producto -->
+    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+      <h2 class="text-xl font-semibold mb-2">Agregar Producto</h2>
+      <p class="text-gray-600">Carga nuevos artículos al catálogo.</p>
+      <a
+        routerLink="/admin/editor"
+        class="mt-4 inline-block bg-rose-400 text-white px-4 py-2 rounded hover:bg-rose-500"
+      >
+        Ir al Formulario
+      </a>
+    </div>
+
+    <!-- Categorías -->
+    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+      <h2 class="text-xl font-semibold mb-2">Categorías</h2>
+      <p class="text-gray-600">Crea, edita o elimina categorías de productos.</p>
+      <a
+        routerLink="/admin/editor"
+        class="mt-4 inline-block bg-rose-400 text-white px-4 py-2 rounded hover:bg-rose-500"
+      >
+        Gestionar Categorías
+      </a>
+    </div>
+
+    <!-- Promociones -->
+    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+      <h2 class="text-xl font-semibold mb-2">Promociones</h2>
+      <p class="text-gray-600">Configura descuentos y ofertas temporales.</p>
+      <a
+        routerLink="/admin/editor"
+        class="mt-4 inline-block bg-rose-400 text-white px-4 py-2 rounded hover:bg-rose-500"
+      >
+        Editar Promos
+      </a>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+      <h2 class="text-xl font-semibold mb-2">Estadísticas</h2>
+      <p class="text-gray-600">Visualiza ventas y productos más vendidos.</p>
+      <button
+        disabled
+        class="mt-4 inline-block bg-gray-300 text-gray-600 px-4 py-2 rounded cursor-not-allowed"
+      >
+        Próximamente
+      </button>
+    </div>
+
+    <!-- Configuración General -->
+    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+      <h2 class="text-xl font-semibold mb-2">Configuración</h2>
+      <p class="text-gray-600">Ajusta la tienda, logo y datos de contacto.</p>
+      <button
+        disabled
+        class="mt-4 inline-block bg-gray-300 text-gray-600 px-4 py-2 rounded cursor-not-allowed"
+      >
+        Próximamente
+      </button>
+    </div>
+  </div>
+</div>

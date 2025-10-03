@@ -1,0 +1,71 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-50">
+  <div class="auth-card w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-2xl">
+
+    <h2 class="text-3xl font-extrabold text-center text-gray-900 border-b-2 border-orange-500 pb-2">
+      Crear Cuenta
+    </h2>
+    <p class="text-center text-sm text-gray-600">
+      Completa el formulario para registrarte.
+    </p>
+
+    <!-- Mensaje de Error/Éxito -->
+    <div *ngIf="registerMessage()"
+         class="p-3 rounded-lg text-sm transition duration-300"
+         [ngClass]="registerMessage()!.type === 'error' ? 'bg-red-100 border-l-4 border-red-500 text-red-700' : 'bg-green-100 border-l-4 border-green-500 text-green-700'">
+      <p>{{ registerMessage()!.text }}</p>
+    </div>
+
+    <!-- Formulario de Registro -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+
+      <!-- Nombre -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+        <input id="name" type="text" formControlName="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 transition duration-150">
+        <p *ngIf="nameControl.invalid && nameControl.touched" class="text-xs text-red-500 mt-1">
+          El nombre es obligatorio y debe tener al menos 3 caracteres.
+        </p>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+        <input id="email" type="email" formControlName="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 transition duration-150">
+        <p *ngIf="emailControl.invalid && emailControl.touched" class="text-xs text-red-500 mt-1">
+          Debe ser un correo electrónico válido.
+        </p>
+      </div>
+
+      <!-- Contraseña -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+        <input id="password" type="password" formControlName="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 transition duration-150">
+        <p *ngIf="passwordControl.invalid && passwordControl.touched" class="text-xs text-red-500 mt-1">
+          La contraseña debe tener al menos 6 caracteres.
+        </p>
+      </div>
+
+      <!-- Confirmar Contraseña -->
+      <div>
+        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirmar Contraseña</label>
+        <input id="confirmPassword" type="password" formControlName="confirmPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 transition duration-150">
+        <p *ngIf="(confirmPasswordControl.touched && registerForm.hasError('passwordMismatch'))" class="text-xs text-red-500 mt-1">
+          Las contraseñas no coinciden.
+        </p>
+      </div>
+
+      <!-- Enlace a Login -->
+      <div class="text-sm text-right">
+        <a routerLink="/login" class="font-medium text-orange-600 hover:text-orange-500">
+          ¿Ya tienes cuenta? Inicia sesión
+        </a>
+      </div>
+
+      <!-- Botón Registrar -->
+      <button type="submit" [disabled]="registerForm.invalid"
+        class="w-full py-3 px-4 border border-transparent rounded-md shadow-lg text-lg font-bold text-white bg-orange-600 hover:bg-orange-700 transition duration-150 disabled:bg-gray-400 disabled:cursor-not-allowed">
+        Registrarme
+      </button>
+    </form>
+  </div>
+</div>

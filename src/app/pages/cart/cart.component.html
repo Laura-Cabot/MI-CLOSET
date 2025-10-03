@@ -1,0 +1,118 @@
+<div class="container mx-auto p-4 md:p-8 min-h-[60vh] font-['Inter']">
+  <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Tu Carrito de Reserva</h1>
+  <p class="text-lg text-gray-600 mb-8">Productos reservados por 7 días.</p>
+
+  <div
+    *ngIf="cartItems().length > 0"
+    class="p-4 rounded-xl mb-6 shadow-md border-l-4"
+    [ngClass]="{
+      'bg-red-100 border-red-500 text-red-700': isExpired(),
+      'bg-green-100 border-green-500 text-green-700':
+        !isExpired() && remainingTime() !== '00:00:00',
+      'bg-yellow-100 border-yellow-500 text-yellow-700': remainingTime() === '00:00:00'
+    }"
+  >
+    <h3 class="font-bold text-lg mb-1">Estado de tu Reserva</h3>
+    <p *ngIf="isExpired() || remainingTime() === '00:00:00'">
+      ⚠️ **¡RESERVA EXPIRADA!** Tus artículos han sido liberados. Por favor, vacía el carrito y
+      vuelve a agregar si están disponibles.
+    </p>
+    <p *ngIf="!isExpired() && remainingTime() !== '00:00:00'">
+      ✅ Tu reserva expira en: **{{ remainingTime() }}**
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-4">
+      <ng-container *ngIf="cartItems().length > 0; else emptyCart">
+        <div
+          *ngFor="let item of cartItems()"
+          class="flex items-center bg-white p-4 rounded-xl shadow-lg transition duration-150 hover:shadow-xl"
+        >
+          <img
+            [src]="item.imageUrl"
+            [alt]="item.name"
+            class="w-20 h-20 object-cover rounded-lg mr-4"
+            onerror="this.onerror=null; this.src='https://placehold.co/80x80/6366f1/ffffff?text=CLOSET'"
+          />
+          <div class="flex-grow">
+            <h2 class="text-xl font-semibold text-gray-800">{{ item.name }}</h2>
+            <p class="text-sm text-gray-500">Color: {{ item.color }} | Talla: {{ item.size }}</p>
+            <p class="text-lg font-bold text-indigo-600">
+              {{ item.price | currency : 'USD' : 'symbol' : '1.2-2' }}
+            </p>
+          </div>
+          <button
+            (click)="removeFromCart(item.id)"
+            class="p-2 ml-4 text-red-500 hover:bg-red-100 rounded-full transition duration-150"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </ng-container>
+
+      <ng-template #emptyCart>
+        <div class="text-center p-12 bg-gray-50 rounded-xl shadow-inner">
+          <p class="text-2xl font-semibold text-gray-700 mb-4">Tu carrito de reserva está vacío.</p>
+          <p class="text-gray-500 mb-6">
+            Explora el
+            <a
+              routerLink="/catalogo"
+              class="text-indigo-600 hover:text-indigo-800 font-medium transition duration-150"
+              >Catálogo</a
+            >
+            para empezar tu reserva.
+          </p>
+        </div>
+      </ng-template>
+    </div>
+
+    <div *ngIf="cartItems().length > 0" class="lg:col-span-1">
+      <div class="bg-white p-6 rounded-xl shadow-2xl sticky top-4">
+        <h3 class="text-2xl font-bold text-gray-800 border-b pb-3 mb-4">Resumen de la Reserva</h3>
+
+        <div class="flex justify-between text-lg mb-2">
+          <span class="text-gray-600">Subtotal:</span>
+          <span class="font-semibold text-gray-800">{{
+            cartTotal() | currency : 'USD' : 'symbol' : '1.2-2'
+          }}</span>
+        </div>
+        <div class="flex justify-between text-lg mb-4 border-b pb-4">
+          <span class="text-gray-600">Envío (Fijo):</span>
+          <span class="font-semibold text-gray-800">$10.00</span>
+        </div>
+
+        <div class="flex justify-between text-2xl font-extrabold text-gray-900 mt-2">
+          <span>TOTAL:</span>
+          <span>{{ cartTotal() + 10 | currency : 'USD' : 'symbol' : '1.2-2' }}</span>
+        </div>
+
+        <button
+          class="w-full mt-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition duration-150 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50"
+        >
+          Proceder al Pago (Checkout)
+        </button>
+
+        <button
+          (click)="clearCart()"
+          class="w-full mt-3 py-3 border border-red-500 text-red-500 font-bold rounded-xl hover:bg-red-50 transition duration-150 focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50"
+        >
+          Vaciar Carrito y Liberar Reserva
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
