@@ -1,38 +1,44 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { PRODUCT_DATA } from '../../data/products';
-import { Item } from '../../models/item.model';
-import { ReviewsComponent } from "../reviews/reviews.component";
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { PRODUCT_DATA } from '../../data/products';
+import { HistoriaComponent } from '../historia/historia.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyPipe, ReviewsComponent, FormsModule],
+  imports: [CommonModule, RouterLink, CurrencyPipe, FormsModule, HistoriaComponent],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
+  constructor(private router: Router) {}
 
-  categories = ['Ropa', 'Accesorios', 'Disfraces', 'Hogar', 'Calzado', 'Promos'];
+  categories = ['Promos', 'Ropa', 'Calzado', 'Hogar', 'Temporada', 'Joyeria'];
   featuredProducts = PRODUCT_DATA.slice(0, 3);
 
-  colorMap: { [key: string]: string } = {
-    'Negro': 'black',
-    'Blanco': 'white',
-    'Gris': 'gray',
-    'Rojo': 'red',
-    'Azul Claro': '#87CEEB',
-    'Azul Oscuro': '#00008B',
-    'Verde': 'green',
-    'Amarillo': 'yellow',
-    'Marrón': '#8B4513',
-    'Beige': '#f5f5dc',
-    'Rosado': 'pink'
-  };
+  showPromoAlert = false;
 
   ngOnInit() {
-    this.featuredProducts = PRODUCT_DATA.slice(0, 3);
+    this.showPromoAlert = true;
+  }
+
+  closePromoAlert() {
+    this.showPromoAlert = false;
+  }
+
+  goToContact() {
+    this.closePromoAlert();
+    this.router.navigate(['/contacto']);
+  }
+
+  navigateToCategory(category: string) {
+    const cat = category.trim().toLowerCase();
+    if (cat === 'promos' || cat === 'promociones' || cat === 'descuentos') {
+      this.router.navigate(['/promos']);
+    } else {
+      this.router.navigate(['/catalogo'], { queryParams: { category } });
+    }
   }
 }

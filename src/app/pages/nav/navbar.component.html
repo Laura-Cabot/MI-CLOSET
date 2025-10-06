@@ -1,65 +1,192 @@
-<nav class="bg-white shadow-md">
-  <div class="max-w-7xl mx-auto px-8">
-    <div class="flex items-center justify-between h-28">
-      
+<nav class="bg-white shadow-md relative z-[1000]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex items-center justify-between h-24">
       <!-- Logo -->
-      <div class="flex-shrink-0 flex items-center">
-        <a routerLink="/">
-          <img 
-            src="assets/logo/logo.jpg" 
-            alt="Mi Closet" 
-            class="h-24 w-auto hover:opacity-90 transition" 
-          />
-        </a>
-      </div>
-      <!-- Botón hamburguesa (solo mobile) -->
-      <button (click)="isOpen = !isOpen"
-        class="md:hidden text-gray-600 hover:text-rose-500 focus:outline-none text-2xl">
+      <a routerLink="/" class="flex items-center">
+        <img
+          src="assets/logo/logo.jpg"
+          alt="Mi Closet"
+          class="h-20 w-auto hover:opacity-90 transition"
+        />
+      </a>
+
+      <!-- Botón hamburguesa -->
+      <button
+        (click)="toggleMenu()"
+        class="md:hidden text-gray-700 hover:text-rose-500 focus:outline-none text-3xl"
+      >
         ☰
       </button>
 
-      <!-- Links en Desktop -->
-      <div class="hidden md:flex gap-10">
-        <div class="ml-10 flex items-center space-x-6">
-          <a routerLink="/historia" class="text- font-semibold text-gray-700 hover:text-rose-400 px-3 py-2 rounded-md">Nuestra Historia</a>
-          <a routerLink="/catalogo" class="text-md font-semibold text-gray-700 hover:text-rose-400 px-3 py-2 rounded-md">Catálogo</a>
-          <a routerLink="/contacto" class="text-md font-semibold text-gray-700 hover:text-rose-400 px-3 py-2 rounded-md">Contacto</a>
+      <!-- Desktop -->
+      <div class="hidden md:flex items-center space-x-10">
+        <a
+          routerLink="/"
+          class="text-sm font-semibold text-gray-800 hover:text-rose-500 transition"
+          >Inicio</a
+        >
 
-          <!-- Carrito -->
-          <a routerLink="/carrito" class="text-md font-semibold text-gray-700 hover:text-rose-400 relative">
-            Carrito
-            <span *ngIf="itemCount() > 0"
-              class="absolute -top-1 -right-2 w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full flex items-center justify-center">
+        <!-- Categorías -->
+        <div class="relative group">
+          <button
+            class="text-sm font-semibold text-gray-800 hover:text-rose-500 transition flex items-center gap-1"
+          >
+            Categorías
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- 🔹 Arreglo del menú desplegable -->
+          <div
+            class="absolute left-0 top-full bg-white shadow-lg rounded-md w-44 border border-gray-100 
+                   opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 
+                   z-[60]"
+          >
+            <a
+              *ngFor="let category of categories"
+              (click)="goToCategory(category)"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-500 cursor-pointer"
+            >
+              {{ category }}
+            </a>
+          </div>
+        </div>
+
+        <a
+          routerLink="/catalogo"
+          class="text-sm font-semibold text-gray-800 hover:text-rose-500 transition"
+        >
+          Catálogo
+        </a>
+
+        <!-- Carrito -->
+        <div class="relative group">
+          <a
+            routerLink="/carrito"
+            class="relative flex items-center text-gray-800 hover:text-rose-500 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.2 6h13.4M7 13h10"
+              />
+            </svg>
+            <span
+              *ngIf="itemCount() > 0"
+              class="absolute -top-2 -right-3 bg-rose-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+            >
               {{ itemCount() }}
             </span>
           </a>
 
-          <!-- Login/Registro -->
-          <div class="flex space-x-3 ml-4">
-            <a routerLink="/login" class="bg-rose-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-rose-700">Login</a>
-            <a routerLink="/registro" class="bg-gray-100 text-rose-500 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-200">Registro</a>
-          </div>
+          <!-- 🔹 Dropdown del carrito (ajuste z-index) -->
+          <div
+            class="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg border border-gray-200 
+                   opacity-0 group-hover:opacity-100 transform transition-all duration-300 ease-out 
+                   z-[50] group-hover:pointer-events-auto max-h-[80vh] overflow-y-auto"
+          >
+            <div *ngIf="cartItems().length > 0; else emptyCart" class="p-4 space-y-2 pb-6">
+              <div
+                *ngFor="let item of cartItems()"
+                class="flex items-center border-b border-gray-100 pb-2"
+              >
+                <img
+                  [src]="item.imageUrl"
+                  alt="{{ item.name }}"
+                  class="w-10 h-10 object-cover rounded mr-3"
+                />
+                <div class="flex-grow">
+                  <p class="text-sm font-medium text-gray-800 truncate">
+                    {{ item.name }}
+                  </p>
+                  <p class="text-xs text-gray-500">
+                    {{ item.price | currency : 'USD' : 'symbol' }}
+                  </p>
+                </div>
+                <button
+                  (click)="removeFromCart(item.id)"
+                  class="text-gray-400 hover:text-rose-500 text-xs"
+                >
+                  ✕
+                </button>
+              </div>
 
-          <!-- Buscador -->
-          <div class="relative ml-6 hidden md:block">
-            <input type="text" placeholder="Buscar..."
-              [(ngModel)]="searchQuery" (keyup.enter)="onSearch()"
-              class="px-3 py-1 border rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-rose-400" />
-            <button (click)="onSearch()"
-              class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-rose-500">🔍</button>
+              <div class="text-right mt-3">
+                <a
+                  routerLink="/carrito"
+                  class="text-xs text-rose-500 font-semibold hover:underline"
+                >
+                  Ver carrito completo →
+                </a>
+              </div>
+            </div>
+
+            <ng-template #emptyCart>
+              <div class="p-4 text-center text-gray-500 text-sm">Tu carrito está vacío 🛒</div>
+            </ng-template>
           </div>
         </div>
+
+        <a
+          routerLink="/login"
+          class="text-gray-800 hover:text-rose-500 transition"
+          aria-label="Cuenta"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-3.31 0-6 1.79-6 4v2h12v-2c0-2.21-2.69-4-6-4z"
+            />
+          </svg>
+        </a>
       </div>
     </div>
   </div>
 
-  <!-- Menú Mobile -->
-  <div *ngIf="isOpen" class="md:hidden bg-white shadow-lg border-t border-gray-200">
-    <a routerLink="/historia" class="block px-4 py-2 text-gray-700 hover:bg-rose-50">Nuestra Historia</a>
-    <a routerLink="/catalogo" class="block px-4 py-2 text-gray-700 hover:bg-rose-50">Catálogo</a>
-    <a routerLink="/contacto" class="block px-4 py-2 text-gray-700 hover:bg-rose-50">Contacto</a>
-    <a routerLink="/carrito" class="block px-4 py-2 text-gray-700 hover:bg-rose-50">Carrito</a>
-    <a routerLink="/login" class="block px-4 py-2 bg-rose-600 text-white">Login</a>
-    <a routerLink="/registro" class="block px-4 py-2 bg-gray-100 text-rose-500">Registro</a>
+  <!-- Mobile -->
+  <div *ngIf="isOpen" class="md:hidden bg-white border-t border-gray-200 shadow-inner z-[999]">
+    <a routerLink="/" class="block px-4 py-3 text-gray-700 hover:bg-rose-50">Inicio</a>
+    <div class="px-4 py-2 text-gray-700 font-semibold">Categorías</div>
+    <a
+      *ngFor="let category of categories"
+      (click)="goToCategory(category)"
+      class="block px-4 py-2 text-gray-700 hover:bg-rose-50 cursor-pointer"
+    >
+      {{ category }}
+    </a>
+    <a
+      routerLink="/carrito"
+      class="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-rose-50"
+      >🛒 Carrito</a
+    >
+    <a
+      routerLink="/login"
+      class="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-rose-50"
+      >👤 Cuenta</a
+    >
   </div>
 </nav>

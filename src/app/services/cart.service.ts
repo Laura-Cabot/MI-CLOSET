@@ -8,8 +8,6 @@ export interface CartItem {
   name: string;
   price: number;
   imageUrl: string;
-  color: string;
-  size: string;
   quantity: number;
 }
 
@@ -32,6 +30,7 @@ export class CartService {
   public cartTotal = computed(() =>
     this.cartItems().reduce((sum, item) => sum + item.price * item.quantity, 0)
   );
+
   public cartCount = computed(() =>
     this.cartItems().reduce((count, item) => count + item.quantity, 0)
   );
@@ -116,8 +115,9 @@ export class CartService {
     }
   }
 
-  private generateUniqueItemId(item: { productId: number, size: string, color: string }): string {
-    return `${item.productId}-${item.size.replace(/\s/g, '_')}-${item.color.replace(/\s/g, '_')}`;
+  // 🔹 Genera un ID único simple por producto (sin color ni talle)
+  private generateUniqueItemId(item: { productId: number }): string {
+    return `item-${item.productId}`;
   }
 
   public checkAndClearExpiredCart(): void { 
@@ -129,6 +129,7 @@ export class CartService {
     }
   }
 
+  // 🔹 Añadir al carrito
   addToCart(newItem: Omit<CartItem, 'id' | 'quantity'> & { productId: number }): void {
     const itemId = this.generateUniqueItemId(newItem);
 
@@ -156,6 +157,7 @@ export class CartService {
     });
   }
 
+  // 🔹 Eliminar un producto del carrito
   removeFromCart(itemId: string): void {
     this.cartItems.update(currentItems => {
       const existingItem = currentItems.find(item => item.id === itemId);
@@ -175,6 +177,7 @@ export class CartService {
     });
   }
 
+  // 🔹 Limpiar el carrito completo
   clearCart(): void {
     this.cartItems.set([]);
     this.clearExpiry();

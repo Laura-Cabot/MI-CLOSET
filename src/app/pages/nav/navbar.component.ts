@@ -8,23 +8,29 @@ import { CartService } from '../../services/cart.service';
   selector: 'app-nav',
   standalone: true,
   imports: [RouterLink, CommonModule, FormsModule],
-  templateUrl: './navbar.component.html',   // 👈 nombre correcto
-  
+  templateUrl: './navbar.component.html',
 })
 export class NavComponent {
   isOpen = false;
-  searchQuery: string = '';
+  searchQuery = '';
+  categories: string[] = ['Ropa', 'Calzado', 'Hogar', 'Temporada', 'Joyería'];
 
   constructor(private router: Router, private cartService: CartService) {}
 
-  // contador dinámico del carrito
   itemCount = () => this.cartService.cartItems().length;
+  cartItems = () => this.cartService.cartItems();
+  removeFromCart(id: string) {
+    this.cartService.removeFromCart(id);
+  }
 
-  // buscador
-  onSearch() {
-    const q = this.searchQuery.trim();
-    if (!q) return;
-    this.router.navigate(['/catalogo'], { queryParams: { search: q } });
-    this.searchQuery = '';
+  toggleMenu() {
+    this.isOpen = !this.isOpen;
+  }
+
+  goToCategory(category: string) {
+    this.isOpen = false;
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/catalogo'], { queryParams: { category } });
+    });
   }
 }

@@ -12,7 +12,6 @@ export class ProductService {
   private storageKey = 'products';
 
   constructor() {
-    // Inicializar con datos si LocalStorage está vacío
     if (!localStorage.getItem(this.storageKey)) {
       const defaultProducts: Product[] = [
         { id: 1, name: 'Camiseta Básica', price: 29.99, category: 'Ropa' },

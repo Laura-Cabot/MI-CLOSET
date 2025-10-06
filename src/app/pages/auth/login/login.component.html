@@ -1,58 +1,84 @@
-<div class="flex items-center justify-center min-h-screen bg-gray-50">
-  <div class="auth-card w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-2xl">
+<div class="min-h-screen bg-gradient-to-br from-rose-100 via-pink-50 to-white flex flex-col justify-start items-center pt-16 sm:pt-24 px-4">
+  
+  <h1 class="text-4xl sm:text-5xl font-extrabold text-rose-500 mb-6 tracking-tight drop-shadow-sm">
+    Mi Closet
+  </h1>
 
-    <h2 class="text-3xl font-extrabold text-center text-gray-900 border-b-2 border-orange-500 pb-2">
-      Iniciar Sesión
+  <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-10 sm:p-12 space-y-6 border border-rose-100">
+    
+    <h2 class="text-2xl font-bold text-center text-gray-800 border-b-2 border-rose-400 pb-2">
+      {{ isLoginMode() ? 'Iniciar Sesión' : 'Crear Cuenta' }}
     </h2>
-    <p class="text-center text-sm text-gray-600">
-      Usa tu correo y contraseña para acceder a tu cuenta.
+
+    <p class="text-center text-gray-600 text-sm">
+      {{ isLoginMode() 
+        ? 'Ingresá tus datos para acceder a tu cuenta.' 
+        : 'Completá el formulario para registrarte y recibir tu descuento.' }}
     </p>
 
-    <!-- Mensaje -->
-    <div *ngIf="loginMessage()"
-         class="p-3 rounded-lg text-sm transition duration-300"
-         [ngClass]="loginMessage()!.type === 'error' ? 'bg-red-100 border-l-4 border-red-500 text-red-700' : 'bg-green-100 border-l-4 border-green-500 text-green-700'">
-      <p>{{ loginMessage()!.text }}</p>
+    <div *ngIf="message()" class="p-3 rounded-lg text-sm font-medium transition"
+      [ngClass]="message()!.type === 'error'
+        ? 'bg-red-100 border-l-4 border-red-500 text-red-700'
+        : 'bg-green-100 border-l-4 border-green-500 text-green-700'">
+      {{ message()!.text }}
     </div>
 
-    <!-- Form -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+    <form [formGroup]="isLoginMode() ? loginForm : registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      
+      <div *ngIf="!isLoginMode()">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo</label>
+        <input type="text" formControlName="name" placeholder="Tu nombre"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-rose-400 focus:border-rose-400 transition">
+        <p *ngIf="nameControl.invalid && nameControl.touched" class="text-xs text-red-500 mt-1">
+          El nombre es obligatorio y debe tener al menos 3 caracteres.
+        </p>
+      </div>
 
-      <!-- Email -->
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
-        <input id="email" type="email" formControlName="email" autocomplete="email" required
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 transition duration-150"
-          placeholder="tu@correo.com">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico</label>
+        <input type="email" formControlName="email" placeholder="tu@correo.com"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-rose-400 focus:border-rose-400 transition">
         <p *ngIf="emailControl.invalid && emailControl.touched" class="text-xs text-red-500 mt-1">
           Debe ser un correo electrónico válido.
         </p>
       </div>
 
-      <!-- Password -->
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-        <input id="password" type="password" formControlName="password" autocomplete="current-password" required
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500 transition duration-150"
-          placeholder="Mínimo 6 caracteres">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label>
+        <input type="password" formControlName="password" placeholder="Mínimo 6 caracteres"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-rose-400 focus:border-rose-400 transition">
         <p *ngIf="passwordControl.invalid && passwordControl.touched" class="text-xs text-red-500 mt-1">
           La contraseña debe tener al menos 6 caracteres.
         </p>
       </div>
 
-      <!-- Link a registro -->
-      <div class="text-sm text-right">
-        <a routerLink="/register" class="font-medium text-orange-600 hover:text-orange-500">
-          ¿No tienes cuenta? Regístrate
-        </a>
+      <div *ngIf="!isLoginMode()">
+        <label class="block text-sm font-semibold text-gray-700 mb-1">Confirmar Contraseña</label>
+        <input type="password" formControlName="confirmPassword"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-rose-400 focus:border-rose-400 transition">
+        <p *ngIf="registerForm.hasError('passwordMismatch') && confirmPasswordControl.touched" class="text-xs text-red-500 mt-1">
+          Las contraseñas no coinciden.
+        </p>
       </div>
 
-      <!-- Botón -->
-      <button type="submit" [disabled]="loginForm.invalid"
-        class="w-full py-3 px-4 border border-transparent rounded-md shadow-lg text-lg font-bold text-white bg-orange-600 hover:bg-orange-700 transition duration-150 disabled:bg-gray-400 disabled:cursor-not-allowed">
-        Iniciar Sesión
+      <button type="submit"
+        [disabled]="(isLoginMode() ? loginForm.invalid : registerForm.invalid)"
+        class="w-full py-3 rounded-md text-white text-lg font-semibold shadow-md bg-rose-500 hover:bg-rose-600 transition disabled:opacity-50">
+        {{ isLoginMode() ? 'Iniciar Sesión' : 'Registrarme' }}
       </button>
+
+      <div class="text-sm text-center">
+        <a (click)="toggleMode()" class="text-rose-600 hover:text-rose-500 cursor-pointer font-medium">
+          {{ isLoginMode() 
+            ? '¿No tienes cuenta? Regístrate y accedé a beneficios exclusivos ✨' 
+            : '¿Ya tienes cuenta? Inicia sesión' }}
+        </a>
+      </div>
     </form>
+
+    <div *ngIf="!isLoginMode()" class="text-center text-gray-700 text-sm mt-4">
+      💌 Al registrarte, recibirás un correo con tu código de 
+      <span class="font-semibold text-rose-500">10 % OFF</span> para tu primera compra.
+    </div>
   </div>
 </div>
-

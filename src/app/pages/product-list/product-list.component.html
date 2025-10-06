@@ -1,163 +1,197 @@
 <div class="p-6 md:p-8 bg-white min-h-screen font-inter">
-  <!-- Encabezado -->
   <header class="mb-8 text-center">
     <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight mb-2">Catálogo de Productos</h1>
     <p class="text-gray-500">Explora nuestra colección.</p>
   </header>
 
-  <!-- Listado de Productos -->
+  <div class="flex justify-center mb-6 mt-2">
+    <div class="relative w-full sm:w-1/2">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Buscar productos..."
+        class="w-full px-4 py-2 border border-gray-300 rounded-l-lg sm:rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-400 pr-24"
+      />
+
+      <button
+        (click)="onSearch()"
+        class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition text-sm"
+      >
+        Buscar
+      </button>
+
+      <ul
+        *ngIf="searchQuery.length >= 2"
+        class="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-md z-50 max-h-64 overflow-auto"
+      >
+        <li
+          *ngFor="let s of suggestions()"
+          (click)="onSelectSuggestion(s)"
+          class="px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-600 cursor-pointer"
+        >
+          {{ s }}
+        </li>
+        <li *ngIf="suggestions().length === 0" class="px-3 py-2 text-sm text-gray-500">
+          No hay coincidencias…
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div
+    *ngIf="appliedQuery() && filteredProducts().length === 0"
+    class="text-center py-4 text-gray-600"
+  >
+    <p class="text-base font-semibold mb-1">😕 No hay elementos relacionados a tu búsqueda</p>
+    <p class="text-sm text-gray-500">
+      Probá con otro término o
+      <a (click)="clearFilters()" class="text-rose-500 hover:underline cursor-pointer"
+        >limpiá la búsqueda</a
+      >.
+    </p>
+  </div>
+
   <section>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       @for (product of paginatedProducts(); track product.id) {
       <div
         class="w-full bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
       >
-        <!-- Imagen -->
-        <div class="aspect-[4/5] bg-gray-100 flex items-center justify-center overflow-hidden">
+        <div
+          class="relative aspect-[4/5] bg-gray-100 flex items-center justify-center overflow-hidden"
+        >
           <img [src]="product.image" [alt]="product.name" class="w-full h-full object-cover" />
+          <div
+            *ngIf="+product.stock === 0"
+            class="absolute inset-0 bg-gray-900/40 flex items-center justify-center"
+          >
+            <span
+              class="px-3 py-1 rounded-md bg-white/80 text-gray-800 text-xs font-bold uppercase tracking-wide"
+            >
+              Agotado
+            </span>
+          </div>
         </div>
 
-        <!-- Contenido -->
         <div class="p-3 flex flex-col text-sm">
           <span class="text-[10px] font-semibold uppercase tracking-wider text-rose-500 block mb-1">
             {{ product.category }}
           </span>
-          <h3 class="text-base font-semibold text-gray-800 mb-1 truncate">{{ product.name }}</h3>
-          <p class="text-lg font-bold text-rose-600 mb-3">
+          <h3 class="text-base font-semibold text-gray-800 mb-1 truncate">
+            {{ product.name }}
+          </h3>
+          <p class="text-lg font-bold text-rose-600 mb-2">
             {{ product.price | currency : 'USD' : 'symbol' : '1.2-2' }}
           </p>
 
-          <!-- Botón Ver más -->
           <button
             (click)="openModal(product)"
-            class="w-full py-2 rounded-md bg-rose-400 text-white font-semibold text-sm hover:bg-rose-500 transition"
+            class="w-full py-2 rounded-md bg-rose-400 text-white font-semibold text-sm hover:bg-rose-500 transition disabled:opacity-50"
+            [disabled]="+product.stock === 0"
+            title="+product.stock === 0 ? 'Producto agotado' : 'Ver más'"
           >
             Ver más
           </button>
         </div>
       </div>
-      }
-    </div>
-  </section>
-
-  <!-- Botón Volver al Catálogo Completo -->
-  <div class="flex justify-center mt-8">
-    <button
-      (click)="clearFilters()"
-      class="px-6 py-2 bg-rose-500 text-white font-semibold rounded-lg shadow hover:bg-rose-600 transition"
-    >
-      Volver al Catálogo Completo
-    </button>
-  </div>
-
-  <!-- Paginado -->
-  <div class="flex justify-center items-center mt-6 space-x-1 text-sm">
-    <button
-      (click)="prevPage()"
-      [disabled]="currentPage() === 1"
-      class="px-2 py-1 rounded bg-rose-400 text-white disabled:opacity-50 hover:bg-rose-500 transition"
-    >
-      «
-    </button>
-    <button
-      *ngFor="let page of [].constructor(totalPages()); let i = index"
-      (click)="goToPage(i + 1)"
-      [ngClass]="{
-        'bg-rose-400 text-white': currentPage() === i + 1,
-        'bg-white text-rose-500 border border-rose-300 hover:bg-rose-50': currentPage() !== i + 1
-      }"
-      class="px-2 py-1 rounded transition"
-    >
-      {{ i + 1 }}
-    </button>
-    <button
-      (click)="nextPage()"
-      [disabled]="currentPage() === totalPages()"
-      class="px-2 py-1 rounded bg-rose-400 text-white disabled:opacity-50 hover:bg-rose-500 transition"
-    >
-      »
-    </button>
-  </div>
-
-  <!-- 🟢 Modal con ficha completa -->
-  <div
-    *ngIf="showModal"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  >
-    <div class="bg-white rounded-lg max-w-md w-full p-6 relative">
-      <button
-        (click)="closeModal()"
-        class="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-      >
-        ✕
-      </button>
-      <img
-        *ngIf="selectedProduct"
-        [src]="selectedProduct.image"
-        [alt]="selectedProduct.name"
-        class="w-full h-64 object-cover rounded mb-4"
-      />
-      <h2 class="text-xl font-bold mb-2">{{ selectedProduct?.name }}</h2>
-      <p class="text-gray-600 mb-4">{{ selectedProduct?.description }}</p>
-      <p class="text-lg font-semibold text-rose-500 mb-4">
-        {{ selectedProduct?.price | currency : 'USD' : 'symbol' : '1.2-2' }}
-      </p>
-
-      <!-- Tallas -->
-      <div class="mb-3" *ngIf="selectedProduct?.isApparel && selectedProduct">
-        <label class="block text-xs font-medium text-gray-600 mb-1">Talla:</label>
-        <div class="flex flex-wrap gap-1">
+      } @empty {
+      <div class="col-span-full" *ngIf="!searchQuery.trim() && allProducts().length === 0">
+        <div
+          class="w-full flex flex-col items-center justify-center py-20 text-center border border-dashed border-gray-300 rounded-xl bg-white"
+        >
+          <div class="text-4xl mb-3">🛍️</div>
+          <p class="text-gray-800 font-semibold mb-1 text-lg">
+            Por el momento no hay productos disponibles en esta categoría.
+          </p>
+          <p class="text-gray-500 text-sm mb-4">
+            Explorá otras secciones o volvé más tarde para ver las novedades.
+          </p>
           <button
-            *ngFor="let size of selectedProduct.sizes"
-            (click)="selectSize(selectedProduct!.id, size)"
-            [disabled]="selectedProduct.stock === 0"
-            [ngClass]="{
-              'bg-rose-400 text-white shadow':
-                selectedOptions[selectedProduct!.id]?.size === size && selectedProduct.stock > 0,
-              'bg-gray-200 text-gray-400 line-through cursor-not-allowed':
-                selectedProduct.stock === 0,
-              'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-rose-100':
-                selectedOptions[selectedProduct!.id]?.size !== size && selectedProduct.stock > 0
-            }"
-            class="w-7 h-7 flex items-center justify-center text-[10px] font-semibold rounded-full transition"
+            (click)="clearFilters()"
+            class="px-5 py-2 bg-rose-500 text-white font-semibold rounded-md shadow hover:bg-rose-600 transition"
           >
-            {{ size }}
+            Volver al Catálogo
           </button>
         </div>
       </div>
+      }
+    </div>
 
-      <!-- Colores -->
-      <div class="mb-3" *ngIf="selectedProduct">
-        <label class="block text-xs font-medium text-gray-600 mb-1">Color:</label>
-        <div class="flex flex-wrap gap-1">
-          <button
-            *ngFor="let color of selectedProduct.colors"
-            (click)="selectColor(selectedProduct!.id, color)"
-            [disabled]="selectedProduct.stock === 0"
-            [ngClass]="{
-              'ring-2 ring-offset-1 ring-rose-400':
-                selectedOptions[selectedProduct!.id]?.color === color && selectedProduct.stock > 0,
-              'opacity-40 cursor-not-allowed': selectedProduct.stock === 0
-            }"
-            [style.backgroundColor]="colorMap[color] || colorMap['default']"
-            class="w-5 h-5 rounded-full border border-gray-300 transition"
-            [title]="color"
-          ></button>
-        </div>
-      </div>
-
-      <!-- Botón Añadir al Carrito -->
+    <div *ngIf="totalPages() > 1" class="flex justify-center items-center gap-2 mt-10">
       <button
-        (click)="addToCart(selectedProduct!)"
-        [disabled]="!canAddToCart(selectedProduct!)"
-        [ngClass]="{
-          'bg-rose-400 text-white hover:bg-rose-500': canAddToCart(selectedProduct!),
-          'bg-rose-100 text-rose-400 cursor-not-allowed': !canAddToCart(selectedProduct!)
-        }"
-        class="w-full py-2 rounded-md font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-rose-200 transition"
+        (click)="prevPage()"
+        [disabled]="currentPage() === 1"
+        class="px-3 py-1 bg-gray-100 rounded-md text-gray-700 hover:bg-gray-200 disabled:opacity-50"
       >
-        {{ canAddToCart(selectedProduct!) ? 'Añadir al Carrito' : 'Selecciona opciones' }}
+        ← Anterior
       </button>
+
+      <span class="text-sm text-gray-700"> Página {{ currentPage() }} de {{ totalPages() }} </span>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="currentPage() === totalPages()"
+        class="px-3 py-1 bg-gray-100 rounded-md text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+      >
+        Siguiente →
+      </button>
+    </div>
+
+    <div *ngIf="selectedCategory" class="mt-12 text-center">
+      <button
+        (click)="clearFilters()"
+        class="inline-flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-semibold px-5 py-2 rounded-lg shadow-md transition"
+      >
+        ← Volver al catálogo completo
+      </button>
+    </div>
+  </section>
+
+  <div
+    *ngIf="showModal && selectedProduct"
+    class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+  >
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 relative animate-fadeIn">
+      <button
+        (click)="closeModal()"
+        class="absolute top-2 right-3 text-gray-500 hover:text-rose-500 text-2xl"
+      >
+        &times;
+      </button>
+
+      <img
+        [src]="selectedProduct.image"
+        [alt]="selectedProduct.name"
+        class="w-full h-64 object-cover rounded-lg mb-4"
+      />
+
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">
+        {{ selectedProduct.name }}
+      </h2>
+      <p class="text-gray-600 text-sm mb-3">
+        {{ selectedProduct.description }}
+      </p>
+
+      <p class="text-xl font-bold text-rose-600 mb-4">
+        {{ selectedProduct.price | currency : 'USD' : 'symbol' : '1.2-2' }}
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button
+          (click)="addToCart(selectedProduct)"
+          class="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+        >
+          Agregar al carrito
+        </button>
+
+        <button
+          (click)="reserveNow(selectedProduct)"
+          class="flex-1 border border-rose-400 text-rose-500 py-2 rounded-lg hover:bg-rose-50 transition"
+        >
+          Reservar producto
+        </button>
+      </div>
     </div>
   </div>
 </div>

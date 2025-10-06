@@ -1,43 +1,81 @@
-<footer class="bg-gray-100 border-t border-gray-200 mt-16">
-  <div class="max-w-6xl mx-auto px-6 pt-8 pb-4 grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+<footer class="bg-gray-900 text-gray-300 py-10">
+  <div class="max-w-6xl mx-auto px-4">
+    
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
 
-    <div>
-      <h2 class="text-xl font-bold text-rose-500">Mi Closet</h2>
-      <p class="text-sm text-gray-600 mt-2">Tu estilo, tu identidad.</p>
-    </div>
+      <div class="flex flex-col justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-white mb-1">Mi Closet</h2>
+          <p class="text-sm text-gray-400">Tu estilo, tu identidad.</p>
+        </div>
 
-    <div>
-      <h3 class="text-sm font-semibold text-gray-800 mb-2">Contacto</h3>
-      <p class="text-sm text-gray-600">
-        Calle 16 Norberto Treviño <br>
-        entre Sonora y Baja California
-      </p>
-      <p class="text-sm text-gray-600">📧 contacto@micloset.com</p>
-      <p class="text-sm text-gray-600 mt-2">
-        <strong>Horarios:</strong><br>
-        Lunes a Viernes: 10:00 am – 5:00 pm<br>
-        Sábado: 10:00 am – 2:00 pm
-      </p>
-    </div>
-
-    <div>
-      <h3 class="text-sm font-semibold text-gray-800 mb-2">Síguenos</h3>
-      <div class="social-icons mb-3">
-        <a href="https://www.facebook.com/search/top?q=mi%20closet%20ropa%20y%20accesorios"
-           target="_blank" rel="noopener">
-          Facebook
-        </a>
+        <div class="mt-8">
+          <a 
+            routerLink="/contacto" 
+            class="text-rose-400 hover:text-rose-500 transition"
+          >
+            Formulario de contacto
+          </a>
+        </div>
       </div>
-      <div>
-        <a routerLink="/admin" class="text-xs text-gray-400 hover:text-rose-500 transition">
-          Admin
-        </a>
+
+      <div class="flex flex-col justify-center">
+        <h3 class="text-white font-semibold mb-2">Contacto</h3>
+        <p>Calle 16 Norberto Treviño<br>entre Sonora y Baja California</p>
+        <p class="mt-1">
+          <a 
+            href="mailto:contacto@micloset.com" 
+            class="hover:text-rose-400 transition"
+          >
+            contacto@micloset.com
+          </a>
+        </p>
+        <p class="mt-1 text-sm text-gray-400">
+          Lunes a Viernes: 10:00 – 17:00<br />
+          Sábado: 10:00 – 14:00
+        </p>
+      </div>
+
+      <div class="flex flex-col justify-between items-start sm:items-end text-sm">
+        
+        <div class="flex items-center gap-2 mt-6">
+          <img 
+            src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" 
+            alt="Facebook"
+            class="w-5 h-5 invert"
+          />
+          <a 
+            href="https://facebook.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-gray-300 hover:text-rose-400 transition"
+          >
+            Seguinos en Facebook
+          </a>
+        </div>
+
+        <div class="mt-8 flex items-center gap-2">
+          <img 
+            src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" 
+            alt="WhatsApp"
+            class="w-5 h-5 invert"
+          />
+          <a 
+            href="https://wa.me/8341294075"
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-gray-300 hover:text-rose-400 transition"
+          >
+            Comunicate por WhatsApp
+          </a>
+        </div>
+
       </div>
     </div>
 
-  </div>
+    <div class="border-t border-gray-700 mt-10 pt-4 text-center text-sm text-gray-500">
+      © 2025 Mi Closet. Todos los derechos reservados.
+    </div>
 
-  <div class="bottom-bar">
-    © 2025 Mi Closet. Todos los derechos reservados.
   </div>
 </footer>

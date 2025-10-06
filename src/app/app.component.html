@@ -1,39 +1,11 @@
 <div class="min-h-screen bg-gray-50 flex flex-col font-inter">
   <app-nav></app-nav>
-  <div
-    *ngIf="showPromoAlert"
-    class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-80 bg-gradient-to-r from-rose-500 via-pink-400 to-gray-200 text-white rounded-xl shadow-2xl p-6 text-center animate-fade-in"
-  >
-    <h3 class="text-xl font-bold mb-2">🎁 ¡Bienvenida a Mi Closet!</h3>
-    <p class="text-sm mb-4 text-white">
-      Suscribite y obtené <span class="font-semibold">15% OFF</span> en tu primera compra.
-    </p>
-
-    <button
-      (click)="goToContact()"
-      class="w-full bg-white text-rose-500 font-semibold py-2 rounded-lg hover:bg-gray-100 transition mb-3"
-    >
-      Quiero mi descuento
-    </button>
-    <button
-      (click)="closePromoAlert()"
-      class="w-full bg-rose-600 text-white py-2 rounded-lg hover:bg-rose-700 transition"
-    >
-      Más tarde
-    </button>
-
-    <button
-      (click)="closePromoAlert()"
-      class="absolute top-2 right-3 text-white hover:text-gray-200 text-lg font-bold"
-    >
-      ✕
-    </button>
-  </div>
 
   <main class="flex-grow">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <router-outlet></router-outlet>
     </div>
   </main>
+
   <app-footer></app-footer>
 </div>

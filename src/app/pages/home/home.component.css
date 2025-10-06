@@ -1,8 +1,7 @@
-/* Máquina de escribir */
 .typewriter {
   display: inline-block;
   overflow: hidden;
-  border-right: 2px solid #e11d48; /* cursor rosa */
+  border-right: 2px solid #e11d48;
   white-space: nowrap;
   animation: typing 2.5s steps(25, end), blink 0.75s step-end infinite;
 }
@@ -34,3 +33,57 @@
 .animate-fade-in-down {
   animation: fade-in-down 0.8s ease-out forwards;
 }
+
+.promo-popup {
+  position: fixed;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  max-width: 420px;
+  width: 90%;
+  background: linear-gradient(to right, #f43f5e, #ec4899, #e5e7eb);
+  color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .promo-popup {
+    top: 40%;
+    width: 85%;
+    font-size: 0.9rem;
+    padding: 1.2rem;
+    line-height: 1.3rem;
+  }
+
+  .promo-popup h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .promo-popup p {
+    font-size: 0.85rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .promo-popup button {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+}
+
