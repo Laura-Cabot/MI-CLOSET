@@ -1,6 +1,9 @@
-<div class="p-8 bg-white min-h-screen font-inter">
-  <h1 class="text-3xl font-bold text-gray-800 mb-6">Editor de Destacados</h1>
-  <!-- 🔙 Volver al Panel -->
+<div class="p-4 sm:p-8 bg-gray-50 min-h-screen font-inter">
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold text-rose-600 mb-6 text-center sm:text-left">
+      Editor de Productos Destacados
+    </h1>
+     <!-- 🔙 Volver al Panel -->
 <div class="mb-6">
   <a
     routerLink="/admin"
@@ -9,91 +12,238 @@
     ← Volver al Panel de Control
   </a>
 </div>
+    <p class="text-gray-500 mb-10">
+      Desde aquí puedes agregar nuevos productos y elegir hasta <b>3 destacados</b> para la portada (Guardado localmente).
+    </p>
 
-  <p class="text-gray-500 mb-10">
-    Desde aquí podés agregar nuevos productos y elegir hasta <b>3 destacados</b> para la portada.
-  </p>
+    <!-- 🔝 Destacados actuales -->
+    <section class="mb-10 p-6 bg-white rounded-xl shadow-lg">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4 flex justify-between items-center">
+        Productos Destacados (Vitrina)
+        <span class="text-sm font-medium text-gray-500">
+          ({{ featuredProducts().length }}/3)
+        </span>
+      </h2>
+      <p class="text-sm text-gray-500 mb-6">
+        Máximo 3 productos. Haz clic en 'Quitar' para liberar un espacio.
+      </p>
 
-  <!-- 🆕 Crear nuevo producto -->
-  <section class="mb-12 border border-gray-200 rounded-xl p-6 bg-gray-50">
-    <h2 class="text-2xl font-semibold mb-4 text-gray-700">Agregar nuevo producto</h2>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-      <input [(ngModel)]="newProduct.name" placeholder="Nombre*" class="border rounded px-3 py-2" />
-      <input [(ngModel)]="newProduct.category" placeholder="Categoría" class="border rounded px-3 py-2" />
-      <input [(ngModel)]="newProduct.price" type="number" placeholder="Precio" class="border rounded px-3 py-2" />
-      <input [(ngModel)]="newProduct.stock" type="number" placeholder="Stock" class="border rounded px-3 py-2" />
-      <input [(ngModel)]="newProduct.imageUrl" placeholder="URL de imagen*" class="border rounded px-3 py-2 col-span-full" />
-    </div>
-
-    <div class="flex justify-end">
-      <button
-        (click)="createProduct()"
-        class="bg-rose-500 text-white px-5 py-2 rounded-lg hover:bg-rose-600 transition"
-      >
-        Guardar producto
-      </button>
-    </div>
-  </section>
-
-  <!-- 🔝 Destacados actuales -->
-  <section class="mb-10">
-    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Productos destacados actuales</h2>
-    <div *ngIf="destacados().length === 0" class="text-gray-500 border rounded p-6 text-center">
-      No hay productos destacados todavía.
-    </div>
-
-    <div *ngIf="destacados().length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div *ngFor="let p of destacados()" class="border rounded-xl p-4 shadow hover:shadow-lg transition relative">
-        <img
-          [src]="p.imageUrl"
-          alt="{{ p.name }}"
-          class="w-full h-48 object-cover rounded-lg mb-3"
-        />
-        <h3 class="font-semibold text-gray-800">{{ p.name }}</h3>
-        <p class="text-gray-500 text-sm">{{ p.category }}</p>
-        <p class="text-sm mt-1">{{ p.stock === 0 ? 'Agotado' : 'Stock: ' + p.stock }}</p>
-        <p class="font-medium text-gray-700 mt-1">$ {{ p.price | number:'1.0-0' }}</p>
-
-        <div class="flex gap-2 mt-3">
-          <button (click)="toggleDestacado(p)" class="bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200">
-            Quitar
-          </button>
-          <button (click)="deleteProduct(p)" class="bg-rose-100 text-rose-600 px-3 py-1 rounded hover:bg-rose-200">
-            🗑 Eliminar
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (p of featuredProducts(); track p.id) {
+        <div class="border rounded-xl p-4 shadow-md bg-white relative overflow-hidden">
+          <!-- Banner de Destacado -->
+          <span class="absolute top-0 right-0 bg-rose-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+            Destacado
+          </span>
+          <img
+            [src]="p.imageUrl"
+            alt="{{ p.name }}"
+            class="w-full h-32 object-cover rounded-lg mb-3"
+            onerror="this.onerror=null;this.src='https://placehold.co/400x128/f4f4f5/9ca3af?text=IMAGEN+NO+DISPONIBLE'"
+          />
+          <h3 class="font-bold text-gray-800 truncate">{{ p.name }}</h3>
+          <p class="text-gray-500 text-sm mb-2">{{ p.category }}</p>
+          <p class="text-rose-500 text-lg font-bold mb-3">
+            $ {{ p.price | number:'1.2-2' }}
+          </p>
+          <button
+            (click)="toggleDestacado(p)"
+            class="w-full py-2 text-sm rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
+          >
+            Quitar de Vitrina
           </button>
         </div>
+        }
+
+        @for (i of emptyFeaturedSlots(); track i) {
+        <div
+          class="border-2 border-dashed border-gray-300 rounded-xl p-4 bg-gray-100 flex items-center justify-center h-48"
+        >
+          <span class="text-gray-500 text-center text-sm">Espacio {{ i + 1 + featuredProducts().length }} Vacío</span>
+        </div>
+        }
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 📦 Otros productos -->
-  <section>
-    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Otros productos disponibles</h2>
-    <div class="flex items-center gap-3 mb-6">
-      <input [(ngModel)]="search" placeholder="Buscar producto..." class="border rounded-lg px-3 py-2 w-full sm:w-96" />
-    </div>
+    <!-- 🆕 Crear nuevo producto -->
+    <section class="mb-10 border border-gray-200 rounded-xl p-6 bg-white shadow-lg">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700">
+        ➕ Agregar Nuevo Producto
+      </h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <input
+          [(ngModel)]="newProduct().name"
+          placeholder="Nombre*"
+          class="border rounded px-3 py-2 w-full"
+        />
+        <input
+          [(ngModel)]="newProduct().category"
+          placeholder="Categoría"
+          class="border rounded px-3 py-2 w-full"
+        />
+        <input
+          [(ngModel)]="newProduct().price"
+          type="number"
+          placeholder="Precio"
+          class="border rounded px-3 py-2 w-full"
+        />
+        <input
+          [(ngModel)]="newProduct().stock"
+          type="number"
+          placeholder="Stock"
+          class="border rounded px-3 py-2 w-full"
+        />
+        <input
+          [(ngModel)]="newProduct().imageUrl"
+          placeholder="URL de imagen*"
+          class="border rounded px-3 py-2 w-full col-span-full"
+        />
+      </div>
 
-    <div *ngIf="filteredNonFeatured().length === 0" class="text-gray-500 border rounded p-6 text-center">
-      No hay más productos para mostrar.
-    </div>
+      <div class="flex justify-end">
+        <button
+          (click)="createProduct()"
+          [disabled]="isLoading() || !newProduct().name || !newProduct().imageUrl"
+          class="bg-rose-500 text-white px-5 py-2 rounded-lg hover:bg-rose-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span *ngIf="!isLoading()">Guardar Producto</span>
+          <span *ngIf="isLoading()">Guardando...</span>
+        </button>
+      </div>
+    </section>
 
-    <div *ngIf="filteredNonFeatured().length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div *ngFor="let p of filteredNonFeatured()" class="border rounded-xl p-4 shadow hover:shadow-lg transition">
-        <img [src]="p.imageUrl" alt="{{ p.name }}" class="w-full h-48 object-cover rounded-lg mb-3" />
-        <h3 class="font-semibold text-gray-800">{{ p.name }}</h3>
-        <p class="text-gray-500 text-sm">{{ p.category }}</p>
-        <p class="text-sm mt-1">{{ p.stock === 0 ? 'Agotado' : 'Stock: ' + p.stock }}</p>
-        <p class="font-medium text-gray-700 mt-1">$ {{ p.price | number:'1.0-0' }}</p>
+    <!-- 📦 Catálogo / Otros productos (Tabla Escalable) -->
+    <section class="p-6 bg-white rounded-xl shadow-lg">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">
+        Catálogo de Productos ({{ nonFeaturedProducts().length }})
+      </h2>
 
-        <button (click)="toggleDestacado(p)"
-                class="w-full mt-3 py-2 rounded-lg font-semibold hover:opacity-90 transition bg-emerald-500 text-white">
-          ➕ Agregar a destacados
+      <!-- Buscador -->
+      <div class="mb-6">
+        <input
+          [(ngModel)]="search"
+          placeholder="Buscar por nombre o categoría..."
+          class="border rounded-lg px-3 py-2 w-full sm:w-80"
+        />
+      </div>
+
+      <!-- Tabla Escalable -->
+      <div class="overflow-x-auto border rounded-lg">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4"
+              >
+                Producto
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell"
+              >
+                Categoría
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Precio
+              </th>
+              <th
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell"
+              >
+                Stock
+              </th>
+              <th scope="col" class="relative px-6 py-3">
+                <span class="sr-only">Acciones</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (p of filteredNonFeatured(); track p.id) {
+            <tr class="hover:bg-gray-50 transition">
+              <!-- Nombre y Preview (sin imagen grande) -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center gap-3">
+                <img
+                  [src]="p.imageUrl"
+                  alt="{{ p.name }}"
+                  class="w-8 h-8 object-cover rounded shadow"
+                  onerror="this.onerror=null;this.src='https://placehold.co/32x32/f4f4f5/9ca3af?text=IMG'"
+                />
+                <span class="truncate max-w-[150px]">{{ p.name }}</span>
+              </td>
+              <!-- Categoría -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                {{ p.category }}
+              </td>
+              <!-- Precio -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
+                $ {{ p.price | number:'1.2-2' }}
+              </td>
+              <!-- Stock -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm {{ p.stock === 0 ? 'text-red-500 font-bold' : 'text-gray-500' }} hidden sm:table-cell">
+                {{ p.stock === 0 ? 'Agotado' : p.stock }}
+              </td>
+              <!-- Acciones -->
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex gap-3 justify-end">
+                <button
+                  (click)="toggleDestacado(p)"
+                  [disabled]="featuredProducts().length >= 3"
+                  class="px-3 py-1 text-sm rounded-lg font-semibold transition bg-emerald-500 text-white hover:bg-emerald-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  [title]="featuredProducts().length >= 3 ? 'Máximo 3 destacados' : 'Destacar'"
+                >
+                  Destacar
+                </button>
+                <button
+                  (click)="openDeleteModal(p)"
+                  class="px-3 py-1 text-sm rounded-lg font-semibold transition bg-rose-100 text-rose-600 hover:bg-rose-200"
+                >
+                  🗑
+                </button>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="5" class="p-6 text-center text-gray-500">
+                No se encontraron productos que coincidan con la búsqueda.
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-16 text-center text-gray-400 text-sm border-t pt-6 max-w-7xl mx-auto">
+    Mi Closet Admin © 2025 — Editor de Destacados (Persistencia Local)
+  </footer>
+
+  <!-- Modal de Confirmación -->
+  <div
+    *ngIf="confirmModal().isOpen"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+  >
+    <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl">
+      <h3 class="text-xl font-bold text-gray-900 mb-4">Confirmar Eliminación</h3>
+      <p class="text-gray-600 mb-6">{{ confirmModal().message }}</p>
+      <div class="flex justify-end gap-3">
+        <button
+          (click)="confirmModal.set({ isOpen: false, message: '', productToDelete: null })"
+          class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+        >
+          Cancelar
+        </button>
+        <button
+          (click)="deleteProduct(confirmModal().productToDelete!)"
+          class="px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition"
+        >
+          Eliminar
         </button>
       </div>
     </div>
-  </section>
-
-  <footer class="mt-16 text-center text-gray-400 text-sm border-t pt-6">
-    Mi Closet Admin © 2025 — Editor de Destacados
-  </footer>
+  </div>
 </div>

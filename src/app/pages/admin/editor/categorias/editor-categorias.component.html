@@ -1,32 +1,45 @@
-<div class="p-8 bg-white min-h-screen font-inter">
-  <h1 class="text-3xl font-bold text-gray-800 mb-6">Editor de Categorías</h1>
+<div class="p-4 sm:p-8 bg-gray-50 min-h-screen font-inter">
+  <h1 class="text-3xl font-bold text-rose-600 mb-6">Editor de Categorías</h1>
   <!-- 🔙 Volver al Panel -->
-<div class="mb-6">
-  <a
-    routerLink="/admin"
-    class="inline-flex items-center gap-2 text-rose-500 font-semibold hover:text-rose-600 transition"
-  >
-    ← Volver al Panel de Control
-  </a>
-</div>
-
+  <div class="mb-6">
+    <a
+      routerLink="/admin"
+      class="inline-flex items-center gap-2 text-rose-500 font-semibold hover:text-rose-600 transition"
+    >
+      ← Volver al Panel de Control
+    </a>
+  </div>
   <p class="text-gray-500 mb-10">
     Agregá, modificá o eliminá las categorías de productos. Sin límites de cantidad.
+    Los cambios se guardan automáticamente.
   </p>
 
   <!-- 🆕 Nueva categoría -->
-  <section class="mb-12 border border-gray-200 rounded-xl p-6 bg-gray-50">
+  <section class="mb-12 border border-gray-200 rounded-xl p-6 bg-white shadow-lg">
     <h2 class="text-2xl font-semibold mb-4 text-gray-700">Agregar nueva categoría</h2>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-      <input [(ngModel)]="newCategory.name" placeholder="Nombre*" class="border rounded px-3 py-2" />
-      <input [(ngModel)]="newCategory.imageUrl" placeholder="URL de imagen*" class="border rounded px-3 py-2" />
-      <input [(ngModel)]="newCategory.description" placeholder="Descripción" class="border rounded px-3 py-2 col-span-full" />
+      <input
+        [(ngModel)]="newCategory().name"
+        placeholder="Nombre*"
+        class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-rose-500 focus:border-rose-500 transition"
+      />
+      <input
+        [(ngModel)]="newCategory().imageUrl"
+        placeholder="URL de imagen*"
+        class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-rose-500 focus:border-rose-500 transition"
+      />
+      <input
+        [(ngModel)]="newCategory().description"
+        placeholder="Descripción"
+        class="border border-gray-300 rounded-lg px-3 py-2 w-full col-span-full focus:ring-rose-500 focus:border-rose-500 transition"
+      />
     </div>
 
     <div class="flex justify-end">
       <button
         (click)="addCategory()"
-        class="bg-rose-500 text-white px-5 py-2 rounded-lg hover:bg-rose-600 transition"
+        class="bg-rose-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-rose-600 transition disabled:opacity-50"
+        [disabled]="!newCategory().name || !newCategory().imageUrl"
       >
         Guardar categoría
       </button>
@@ -37,59 +50,118 @@
   <div class="flex items-center gap-3 mb-6">
     <input
       [(ngModel)]="search"
-      placeholder="Buscar categoría..."
-      class="border rounded-lg px-3 py-2 w-full sm:w-96"
+      placeholder="Buscar categoría por nombre o descripción..."
+      class="border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-96 focus:ring-rose-500 focus:border-rose-500 transition"
     />
   </div>
 
-  <!-- 🗂 Listado de categorías -->
-  <div *ngIf="filtered().length === 0" class="text-gray-500 border rounded p-6 text-center">
-    No hay categorías aún.
-  </div>
+  <!-- 🗂 Listado de categorías (Usando sintaxis @if y @for) -->
+  @if (filtered().length === 0) {
+    <div class="text-gray-500 border border-gray-200 rounded-xl p-6 text-center bg-white shadow-md">
+      No hay categorías que coincidan con la búsqueda.
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      @for (c of filtered(); track c.id) {
+        <div
+          class="border border-gray-200 rounded-xl p-4 shadow-md hover:shadow-lg transition relative bg-white"
+        >
+          <!-- Vista normal -->
+          @if (editingId() !== c.id) {
+            <div>
+              <img
+                [src]="c.imageUrl || 'https://placehold.co/400x200/f4f4f5/9ca3af?text=Sin+Imagen'"
+                alt="{{ c.name }}"
+                class="w-full h-32 object-cover rounded-lg mb-3"
+                onerror="this.onerror=null;this.src='https://placehold.co/400x200/f4f4f5/9ca3af?text=Sin+Imagen'"
+              />
+              <h3 class="font-bold text-lg text-gray-800 truncate">{{ c.name }}</h3>
+              <p class="text-gray-500 text-sm mb-4 line-clamp-2 min-h-[2.5rem]">
+                {{ c.description || 'Sin descripción' }}
+              </p>
 
-  <div *ngIf="filtered().length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div
-      *ngFor="let c of filtered()"
-      class="border rounded-xl p-4 shadow hover:shadow-lg transition relative bg-white"
-    >
-      <div *ngIf="editingId !== c.id">
-        <img
-          [src]="c.imageUrl || 'https://via.placeholder.com/300x200?text=Sin+Imagen'"
-          alt="{{ c.name }}"
-          class="w-full h-48 object-cover rounded-lg mb-3"
-        />
-        <h3 class="font-semibold text-gray-800">{{ c.name }}</h3>
-        <p class="text-gray-500 text-sm mb-3">{{ c.description || 'Sin descripción' }}</p>
+              <div class="flex gap-3 pt-2 border-t border-gray-100">
+                <button
+                  (click)="startEdit(c)"
+                  class="flex-grow bg-amber-100 text-amber-700 px-3 py-2 rounded-lg font-semibold hover:bg-amber-200 transition"
+                >
+                  ✏️ Editar
+                </button>
+                <button
+                  (click)="openDeleteModal(c)"
+                  class="bg-rose-100 text-rose-600 px-3 py-2 rounded-lg font-semibold hover:bg-rose-200 transition"
+                >
+                  🗑
+                </button>
+              </div>
+            </div>
+          }
 
-        <div class="flex gap-2">
-          <button (click)="startEdit(c)" class="bg-amber-100 text-amber-700 px-3 py-1 rounded hover:bg-amber-200">
-            ✏️ Editar
-          </button>
-          <button (click)="deleteCategory(c)" class="bg-rose-100 text-rose-600 px-3 py-1 rounded hover:bg-rose-200">
-            🗑 Eliminar
-          </button>
+          <!-- Formulario de edición -->
+          @if (editingId() === c.id) {
+            <div class="mt-3">
+              <h4 class="font-bold mb-3 text-gray-700">Editando: {{ c.name }}</h4>
+              <input
+                [(ngModel)]="editData.name"
+                placeholder="Nombre"
+                class="border rounded-lg px-2 py-1 w-full mb-2 text-sm"
+              />
+              <input
+                [(ngModel)]="editData.imageUrl"
+                placeholder="URL de imagen"
+                class="border rounded-lg px-2 py-1 w-full mb-2 text-sm"
+              />
+              <textarea
+                [(ngModel)]="editData.description"
+                rows="2"
+                placeholder="Descripción"
+                class="border rounded-lg px-2 py-1 w-full mb-3 text-sm"
+              ></textarea>
+
+              <div class="flex justify-end gap-2">
+                <button
+                  (click)="applyEdit()"
+                  class="bg-emerald-500 text-white px-3 py-1 rounded-lg font-semibold hover:bg-emerald-600 transition"
+                >
+                  Guardar
+                </button>
+                <button
+                  (click)="cancelEdit()"
+                  class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg font-semibold hover:bg-gray-200 transition"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          }
         </div>
-      </div>
+      }
+    </div>
+  }
+</div>
 
-      <!-- Formulario de edición -->
-      <div *ngIf="editingId === c.id" class="mt-3 border-t pt-3">
-        <input [(ngModel)]="editData.name" placeholder="Nombre" class="border rounded px-2 py-1 w-full mb-2" />
-        <input [(ngModel)]="editData.imageUrl" placeholder="URL de imagen" class="border rounded px-2 py-1 w-full mb-2" />
-        <textarea [(ngModel)]="editData.description" rows="2" placeholder="Descripción" class="border rounded px-2 py-1 w-full mb-3"></textarea>
-
-        <div class="flex justify-end gap-2">
-          <button (click)="applyEdit()" class="bg-emerald-500 text-white px-3 py-1 rounded hover:bg-emerald-600">
-            Guardar
-          </button>
-          <button (click)="cancelEdit()" class="bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200">
-            Cancelar
-          </button>
-        </div>
+<!-- Modal de Confirmación -->
+@if (confirmModal().isOpen) {
+  <div
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+  >
+    <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl">
+      <h3 class="text-xl font-bold text-gray-900 mb-4">Confirmar Eliminación</h3>
+      <p class="text-gray-600 mb-6">{{ confirmModal().message }}</p>
+      <div class="flex justify-end gap-3">
+        <button
+          (click)="confirmModal.set({ isOpen: false, message: '', categoryToDelete: null })"
+          class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+        >
+          Cancelar
+        </button>
+        <button
+          (click)="deleteCategory(confirmModal().categoryToDelete!)"
+          class="px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition"
+        >
+          Eliminar
+        </button>
       </div>
     </div>
   </div>
-
-  <footer class="mt-16 text-center text-gray-400 text-sm border-t pt-6">
-    Mi Closet Admin © 2025 — Editor de Categorías
-  </footer>
-</div>
+}

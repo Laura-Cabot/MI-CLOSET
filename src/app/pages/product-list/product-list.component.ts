@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,17 +6,20 @@ import { CartService } from '../../services/cart.service';
 import { PRODUCT_DATA, Product } from '../../data/products';
 import Swal from 'sweetalert2';
 
+// Añadimos OnPush para trabajar de forma más eficiente en Zoneless, aunque no es obligatorio.
 @Component({
   selector: 'app-product-list',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './product-list.component.html',
   styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush, // Opcional, pero bueno para Zoneless
 })
 export class ProductListComponent implements OnInit {
   private cartService = inject(CartService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef); // 🔑 INYECCIÓN CLAVE
 
   searchQuery: string = '';
   appliedQuery = signal<string>('');
@@ -27,6 +30,11 @@ export class ProductListComponent implements OnInit {
 
   showModal = false;
   selectedProduct: Product | null = null;
+
+  // 🏷️ Categorías automáticas
+  categories: string[] = Array.from(
+    new Set(PRODUCT_DATA.map((p) => p.category).filter((c) => !!c))
+  );
 
   private normalize(text: string): string {
     return text
@@ -47,7 +55,11 @@ export class ProductListComponent implements OnInit {
   filteredProducts = computed(() => {
     const q = this.normalize(this.appliedQuery());
     return this.allProducts().filter((product) => {
-      if (this.selectedCategory && product.category !== this.selectedCategory) return false;
+      // FILTRO POR CATEGORÍA
+      if (this.selectedCategory && product.category !== this.selectedCategory)
+        return false;
+      
+      // FILTRO POR BÚSQUEDA
       if (
         q &&
         !(
@@ -56,53 +68,112 @@ export class ProductListComponent implements OnInit {
         )
       )
         return false;
+      
       return true;
     });
   });
 
-  totalPages = computed(() => Math.ceil(this.filteredProducts().length / this.itemsPerPage()));
+  totalPages = computed(() =>
+    Math.ceil(this.filteredProducts().length / this.itemsPerPage())
+  );
 
   paginatedProducts = computed(() => {
     const start = (this.currentPage() - 1) * this.itemsPerPage();
     return this.filteredProducts().slice(start, start + this.itemsPerPage());
   });
 
-  // 🔥 Escucha los cambios en los filtros (categoría o búsqueda)
+  // 🔑 NG ON INIT CLAVE
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       const category = params['category'] || '';
       const search = params['search'] || '';
-
+      
       this.selectedCategory = category;
       if (search) this.appliedQuery.set(search);
+      
       this.applyFilters();
+      
+      // 🚨 MÁS CLAVE AÚN: En Zoneless, forzamos la actualización de la vista.
+      this.cdr.detectChanges(); 
     });
   }
 
-  // --- Buscar y limpiar input ---
+  // 🔍 Buscar
   onSearch() {
-    this.appliedQuery.set(this.searchQuery.trim());
+    const query = this.searchQuery.trim();
+    this.appliedQuery.set(query);
     this.searchQuery = '';
     this.currentPage.set(1);
+    
+    this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { search: query || null, category: null }, 
+        replaceUrl: true, 
+    });
   }
 
   onSelectSuggestion(s: string) {
     this.appliedQuery.set(s);
     this.searchQuery = '';
     this.currentPage.set(1);
+    
+    this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { search: s || null, category: null }, 
+        replaceUrl: true,
+    });
   }
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages()) this.currentPage.set(page);
+  // 📂 Filtrar por categoría
+ // product-list.component.ts
+
+// ...
+
+  // 📂 Filtrar por categoría (¡Solución aplicando la misma lógica del Nav!)
+  filterByCategory(category: string) {
+    this.selectedCategory = category;
+    this.appliedQuery.set(''); 
+    this.currentPage.set(1);
+    
+    // 🔑 CLAVE: Forzamos una navegación a una ruta neutra y luego a la destino.
+    // Esto obliga al componente a reaccionar, imitando el comportamiento del Nav.
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/catalogo'], { 
+        queryParams: { category: category, search: null },
+        replaceUrl: true
+      });
+    });
   }
+
+// ...
+
+  // 🔄 Filtros (Mantiene la función para resetear la paginación)
+  applyFilters() {
+    this.currentPage.set(1);
+  }
+
+  clearFilters() {
+    this.selectedCategory = '';
+    this.appliedQuery.set('');
+    this.applyFilters();
+    
+    this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { category: null, search: null },
+        replaceUrl: true,
+    });
+  }
+  
+  // 🧭 Paginación, Carrito, Reservar... (resto del código)
+
   prevPage() {
     if (this.currentPage() > 1) this.currentPage.update((c) => c - 1);
   }
   nextPage() {
-    if (this.currentPage() < this.totalPages()) this.currentPage.update((c) => c + 1);
+    if (this.currentPage() < this.totalPages())
+      this.currentPage.update((c) => c + 1);
   }
 
-  // 🛒 Agregar al carrito (toast elegante)
   addToCart(product: Product) {
     if (product.stock === 0) return;
     this.cartService.addToCart({
@@ -122,10 +193,6 @@ export class ProductListComponent implements OnInit {
       timerProgressBar: true,
       background: '#fdfdfd',
       color: '#333',
-      customClass: {
-        popup: 'shadow-md rounded-lg',
-        title: 'text-sm font-medium',
-      },
     });
 
     this.closeModal();
@@ -141,20 +208,6 @@ export class ProductListComponent implements OnInit {
     this.selectedProduct = null;
   }
 
-  applyFilters() {
-    this.currentPage.set(1);
-  }
-
-  clearFilters() {
-    this.selectedCategory = '';
-    this.appliedQuery.set('');
-    this.applyFilters();
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/catalogo']);
-    });
-  }
-
-  // 💳 Simulación de reserva con pago inmediato
   reserveNow(product: Product) {
     if (!product || product.stock <= 0) return;
 
@@ -162,39 +215,21 @@ export class ProductListComponent implements OnInit {
       title: 'Procesando pago...',
       html: `<p class="text-sm text-gray-500">Por favor espera unos segundos.</p>`,
       allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-      background: '#fff',
-      color: '#333',
-      customClass: {
-        popup: 'rounded-xl shadow-lg',
-        title: 'text-base font-semibold text-gray-800',
-        htmlContainer: 'text-sm text-gray-600',
-      },
+      didOpen: () => Swal.showLoading(),
     });
 
     setTimeout(() => {
       Swal.fire({
         icon: 'success',
         title: 'Pago exitoso 💳',
-        html: `
-          <p class="text-gray-700 text-sm mb-2">
+        html: `<p class="text-gray-700 text-sm mb-2">
             Tu reserva de <b>${product.name}</b> fue pagada correctamente.
           </p>
           <p class="text-gray-500 text-xs">
             Recibirás tu comprobante y detalles del envío en breve.
-          </p>
-        `,
+          </p>`,
         confirmButtonText: 'Finalizar',
         confirmButtonColor: '#22c55e',
-        background: '#fff',
-        color: '#333',
-        customClass: {
-          popup: 'rounded-xl shadow-md',
-          title: 'text-base font-semibold text-gray-800',
-          htmlContainer: 'text-sm text-gray-600',
-        },
       });
     }, 2000);
 

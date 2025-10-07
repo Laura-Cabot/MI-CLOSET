@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
+// 🔑 Interfaz Única y Flexible
 interface Promo {
-  banco: string;
+  titulo: string;           
   descuento: number;
   fecha: string;
-  imagen?: string; // 🖼️ Nuevo campo opcional
+  descripcion: string;     
+  imagen?: string;          // 🔑 CLAVE: Si tiene imagen, es un flyer/banner.
 }
 
 @Component({
@@ -19,9 +21,10 @@ interface Promo {
 export class EditorPromosComponent implements OnInit {
   promos: Promo[] = [];
   nuevaPromo: Promo = {
-    banco: '',
+    titulo: '',
     descuento: 0,
     fecha: '',
+    descripcion: '',
     imagen: '',
   };
 
@@ -41,19 +44,20 @@ export class EditorPromosComponent implements OnInit {
   }
 
   agregarPromo() {
-    if (!this.nuevaPromo.banco || !this.nuevaPromo.descuento) {
-      alert('Por favor, completá los campos obligatorios.');
+    if (!this.nuevaPromo.titulo || !this.nuevaPromo.descripcion) {
+      alert('Por favor, completa el título y la descripción de la promoción.');
       return;
     }
-
+    
     this.promos.push({ ...this.nuevaPromo });
     this.guardarPromos();
 
     // Limpiar el formulario
     this.nuevaPromo = {
-      banco: '',
+      titulo: '',
       descuento: 0,
       fecha: '',
+      descripcion: '',
       imagen: '',
     };
   }

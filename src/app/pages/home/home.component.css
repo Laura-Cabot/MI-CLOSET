@@ -62,28 +62,4 @@
   }
 }
 
-@media (max-width: 640px) {
-  .promo-popup {
-    top: 40%;
-    width: 85%;
-    font-size: 0.9rem;
-    padding: 1.2rem;
-    line-height: 1.3rem;
-  }
-
-  .promo-popup h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .promo-popup p {
-    font-size: 0.85rem;
-    margin-bottom: 0.8rem;
-  }
-
-  .promo-popup button {
-    font-size: 0.9rem;
-    padding: 0.6rem;
-  }
-}
 

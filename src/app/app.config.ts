@@ -1,5 +1,7 @@
+// app.config.ts
+
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withRouterConfig } from '@angular/router'; // Asegúrate de importar withRouterConfig
 
 import { routes } from './app.routes';
 
@@ -7,6 +9,12 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes)
+    provideRouter(
+      routes,
+      // 🔑 CLAVE: Fuerza la recarga cuando solo cambian los queryParams.
+      withRouterConfig({
+        onSameUrlNavigation: 'reload',
+      })
+    )
   ]
 };
